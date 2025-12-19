@@ -21,15 +21,16 @@ export interface GridProps {
 export function createGrid(props: GridProps): HTMLElement {
   const { layout, gridState, onCellClick, highlightedSlotCells = [], slots = [] } = props;
   
-  // Helper function to find which slot(s) a cell belongs to and if it's the first cell
-  const getCellSlotInfo = (cellId: CellId): { slot: Slot; isFirst: boolean } | null => {
+  // Helper function to find ALL slots where this cell is the first cell
+  const getCellSlotLabels = (cellId: CellId): Slot[] => {
+    const firstCellSlots: Slot[] = [];
     for (const slot of slots) {
       const cellIndex = slot.cells.indexOf(cellId);
-      if (cellIndex !== -1) {
-        return { slot, isFirst: cellIndex === 0 };
+      if (cellIndex === 0) {
+        firstCellSlots.push(slot);
       }
     }
-    return null;
+    return firstCellSlots;
   };
   
   const gridContainer = document.createElement('div');
@@ -53,13 +54,33 @@ export function createGrid(props: GridProps): HTMLElement {
         cellElement.className = 'grid-cell active';
         cellElement.style.position = 'relative';
         
-        // Add slot label if this is the first cell of a slot
-        const slotInfo = getCellSlotInfo(cellId);
-        if (slotInfo && slotInfo.isFirst) {
-          const label = document.createElement('div');
-          label.className = 'cell-label';
-          label.textContent = slotInfo.slot.label;
-          cellElement.appendChild(label);
+        // Add color class if cell has a color property
+        const cellProps = layout.cells[cellId];
+        if (cellProps && cellProps.color) {
+          cellElement.classList.add(`color-${cellProps.color}`);
+        }
+        
+        // Add slot labels if this is the first cell of any slot(s)
+        const firstCellSlots = getCellSlotLabels(cellId);
+        if (firstCellSlots.length > 0) {
+          const labelsContainer = document.createElement('div');
+          labelsContainer.style.position = 'absolute';
+          labelsContainer.style.top = '-12px';
+          labelsContainer.style.left = '50%';
+          labelsContainer.style.transform = 'translateX(-50%)';
+          labelsContainer.style.display = 'flex';
+          labelsContainer.style.gap = '4px';
+          labelsContainer.style.zIndex = '10';
+          labelsContainer.style.pointerEvents = 'none';
+          
+          firstCellSlots.forEach(slot => {
+            const label = document.createElement('div');
+            label.className = 'cell-label';
+            label.textContent = slot.label;
+            labelsContainer.appendChild(label);
+          });
+          
+          cellElement.appendChild(labelsContainer);
         }
         
         // Add highlighted class if this cell is part of the highlighted slot
@@ -150,15 +171,16 @@ export function updateGrid(
 ): void {
   const { layout, gridState, onCellClick, highlightedSlotCells = [], slots = [] } = props;
   
-  // Helper function to find which slot(s) a cell belongs to and if it's the first cell
-  const getCellSlotInfo = (cellId: CellId): { slot: Slot; isFirst: boolean } | null => {
+  // Helper function to find ALL slots where this cell is the first cell
+  const getCellSlotLabels = (cellId: CellId): Slot[] => {
+    const firstCellSlots: Slot[] = [];
     for (const slot of slots) {
       const cellIndex = slot.cells.indexOf(cellId);
-      if (cellIndex !== -1) {
-        return { slot, isFirst: cellIndex === 0 };
+      if (cellIndex === 0) {
+        firstCellSlots.push(slot);
       }
     }
-    return null;
+    return firstCellSlots;
   };
   
   // Clear and recreate all cells to ensure drag handlers work correctly
@@ -175,13 +197,33 @@ export function updateGrid(
         cellElement.className = 'grid-cell active';
         cellElement.style.position = 'relative';
         
-        // Add slot label if this is the first cell of a slot
-        const slotInfo = getCellSlotInfo(cellId);
-        if (slotInfo && slotInfo.isFirst) {
-          const label = document.createElement('div');
-          label.className = 'cell-label';
-          label.textContent = slotInfo.slot.label;
-          cellElement.appendChild(label);
+        // Add color class if cell has a color property
+        const cellProps = layout.cells[cellId];
+        if (cellProps && cellProps.color) {
+          cellElement.classList.add(`color-${cellProps.color}`);
+        }
+        
+        // Add slot labels if this is the first cell of any slot(s)
+        const firstCellSlots = getCellSlotLabels(cellId);
+        if (firstCellSlots.length > 0) {
+          const labelsContainer = document.createElement('div');
+          labelsContainer.style.position = 'absolute';
+          labelsContainer.style.top = '-12px';
+          labelsContainer.style.left = '50%';
+          labelsContainer.style.transform = 'translateX(-50%)';
+          labelsContainer.style.display = 'flex';
+          labelsContainer.style.gap = '4px';
+          labelsContainer.style.zIndex = '10';
+          labelsContainer.style.pointerEvents = 'none';
+          
+          firstCellSlots.forEach(slot => {
+            const label = document.createElement('div');
+            label.className = 'cell-label';
+            label.textContent = slot.label;
+            labelsContainer.appendChild(label);
+          });
+          
+          cellElement.appendChild(labelsContainer);
         }
         
         // Add highlighted class if this cell is part of the highlighted slot

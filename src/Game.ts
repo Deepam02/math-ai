@@ -19,9 +19,11 @@ export class Game {
   private hoveredSlotId: string | null = null;
   private successSound: HTMLAudioElement;
   private errorSound: HTMLAudioElement;
+  private onComplete: (() => void) | null;
 
-  constructor(puzzle: Puzzle, container: HTMLElement) {
+  constructor(puzzle: Puzzle, container: HTMLElement, onComplete?: () => void) {
     this.container = container;
+    this.onComplete = onComplete || null;
     this.state = this.initializeState(puzzle);
     
     // Initialize sound effects using Web Audio API
@@ -251,6 +253,13 @@ export class Game {
     if (solved) {
       this.playSound('success');
       this.showMessage('🎉 Congratulations! You solved the puzzle!', 'success');
+      
+      // Call onComplete callback if provided
+      if (this.onComplete) {
+        setTimeout(() => {
+          this.onComplete!();
+        }, 500);
+      }
     } else {
       this.playSound('error');
       this.showMessage('❌ Not quite right. Check the conditions and try again!', 'error');
@@ -494,18 +503,7 @@ export class Game {
     const sidebar = document.createElement('div');
     sidebar.className = 'sidebar';
 
-    // Constraints (moved to top)
-    this.slotPreviewElement = createSlotPreview({
-      slots: this.state.puzzle.slots,
-      gridState: this.state.grid,
-      constraints: this.state.puzzle.constraints,
-      validationResults: this.state.validationResults,
-      isSubmitted: this.state.isSubmitted,
-      onSlotHover: this.handleSlotHover
-    });
-    sidebar.appendChild(this.slotPreviewElement);
-
-    // Digit pool (middle)
+    // Digit pool (moved to top)
     this.digitPoolElement = createDigitPool({
       availableDigits: this.state.availableDigits,
       selectedDigitIndex: this.state.selectedDigitIndex,
@@ -515,6 +513,17 @@ export class Game {
       onDropToPool: this.handleDropToPool
     });
     sidebar.appendChild(this.digitPoolElement);
+
+    // Slot Preview / Formed Numbers (moved below)
+    this.slotPreviewElement = createSlotPreview({
+      slots: this.state.puzzle.slots,
+      gridState: this.state.grid,
+      constraints: this.state.puzzle.constraints,
+      validationResults: this.state.validationResults,
+      isSubmitted: this.state.isSubmitted,
+      onSlotHover: this.handleSlotHover
+    });
+    sidebar.appendChild(this.slotPreviewElement);
 
     mainContent.appendChild(sidebar);
     this.container.appendChild(mainContent);

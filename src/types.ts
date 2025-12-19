@@ -9,12 +9,19 @@
 export type CellId = string;
 
 /**
+ * Cell properties including optional color
+ */
+export interface CellProperties {
+  color?: 'green' | 'yellow' | 'red' | 'blue';
+}
+
+/**
  * Layout configuration for the puzzle grid
  */
 export interface PuzzleLayout {
   rows: number;
   cols: number;
-  cells: Record<CellId, Record<string, never>>; // Empty object for each cell
+  cells: Record<CellId, CellProperties>;
 }
 
 /**
@@ -24,6 +31,7 @@ export interface Slot {
   id: string;
   label: string;
   cells: CellId[];
+  prefilled?: number[]; // Optional prefilled values for evaluation mode
 }
 
 /**
@@ -33,7 +41,13 @@ export type ConstraintType =
   | 'greatestNumber'
   | 'smallestNumber'
   | 'noRepeatWithinSlot'
-  | 'noRepeatAcrossSlots';
+  | 'noRepeatAcrossSlots'
+  | 'sameDigit'
+  | 'smallestUsingReference'
+  | 'placeValueSumEquals'
+  | 'slotDifferenceEqualsSlot'
+  | 'cellDigitRestriction'
+  | 'placeValueDifference';
 
 /**
  * Constraint definition for a slot
@@ -41,10 +55,28 @@ export type ConstraintType =
 export interface Constraint {
   id: string;
   type: ConstraintType;
-  slot: string; // Slot ID
+  slot?: string; // Slot ID (optional for global constraints)
   description: string;
   noRepeat?: boolean; // Additional flag for no-repeat constraints
   relatedSlots?: string[]; // For cross-slot constraints
+  referenceSlot?: string; // For constraints that reference another slot
+  // Place value constraints
+  places?: string[]; // Place values like 'tens', 'ones', 'hundreds', 'thousands'
+  sum?: number; // Sum value for place value constraints
+  sumOfDigits?: number; // Sum of all digits in a number
+  // Slot arithmetic constraints
+  slotA?: string; // First slot for arithmetic operations
+  slotB?: string; // Second slot for arithmetic operations
+  resultSlot?: string; // Result slot for arithmetic operations
+  // Place value difference constraints
+  place?: string; // Single place value
+  placeA?: string; // First place value
+  placeB?: string; // Second place value
+  difference?: number; // Difference value
+  // Cell digit restrictions
+  color?: 'green' | 'yellow' | 'red' | 'blue'; // Cell color for restrictions
+  notAllowed?: number[]; // Digits not allowed in colored cells
+  allowedRange?: [number, number]; // Range of allowed digits [min, max]
 }
 
 /**
@@ -58,6 +90,8 @@ export interface Puzzle {
   digits: number[];
   slots: Slot[];
   constraints: Constraint[];
+  mode?: 'construction' | 'evaluation'; // Optional mode (default: construction)
+  answer?: Record<string, number[]>; // Direct answer: slot ID -> digits array (bypasses individual checks)
 }
 
 /**
