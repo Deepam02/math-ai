@@ -21,10 +21,10 @@ export class Game {
   private errorSound: HTMLAudioElement;
   private onComplete: (() => void) | null;
 
-  constructor(puzzle: Puzzle, container: HTMLElement, onComplete?: () => void) {
+  constructor(puzzle: Puzzle, container: HTMLElement, onComplete?: () => void, initialScore: number = 0, initialHealth: number = 3) {
     this.container = container;
     this.onComplete = onComplete || null;
-    this.state = this.initializeState(puzzle);
+    this.state = this.initializeState(puzzle, initialScore, initialHealth);
     
     // Initialize sound effects using Web Audio API
     this.successSound = this.createSuccessSound();
@@ -36,7 +36,7 @@ export class Game {
   /**
    * Initialize game state from puzzle
    */
-  private initializeState(puzzle: Puzzle): GameState {
+  private initializeState(puzzle: Puzzle, initialScore: number = 0, initialHealth: number = 3): GameState {
     const grid = new Map<CellId, number | null>();
     
     // Initialize all cells with null
@@ -51,8 +51,24 @@ export class Game {
       selectedDigit: null,
       selectedDigitIndex: null,
       isSubmitted: false,
-      validationResults: []
+      validationResults: [],
+      health: initialHealth,
+      score: initialScore
     };
+  }
+
+  /**
+   * Get current score
+   */
+  public getScore(): number {
+    return this.state.score;
+  }
+
+  /**
+   * Get current health
+   */
+  public getHealth(): number {
+    return this.state.health;
   }
 
   /**
@@ -254,6 +270,9 @@ export class Game {
       this.playSound('success');
       this.showMessage('🎉 Congratulations! You solved the puzzle!', 'success');
       
+      // Increase score
+      this.state.score++;
+      
       // Call onComplete callback if provided
       if (this.onComplete) {
         setTimeout(() => {
@@ -263,6 +282,17 @@ export class Game {
     } else {
       this.playSound('error');
       this.showMessage('❌ Not quite right. Check the conditions and try again!', 'error');
+      
+      // Decrease health
+      this.state.health--;
+      
+      // Check for game over
+      if (this.state.health <= 0) {
+        setTimeout(() => {
+          this.showGameOver();
+        }, 1000);
+        return;
+      }
     }
     
     this.updateDisplay();
@@ -272,7 +302,7 @@ export class Game {
    * Handle reset button click
    */
   private handleReset = (): void => {
-    this.state = this.initializeState(this.state.puzzle);
+    this.state = this.initializeState(this.state.puzzle, this.state.score, this.state.health);
     this.updateDisplay();
     this.clearMessage();
   };
@@ -415,9 +445,71 @@ export class Game {
   }
 
   /**
+   * Get current score
+   */
+  public getScore(): number {
+    return this.state.score;
+  }
+
+  /**
+   * Get current health
+   */
+  public getHealth(): number {
+    return this.state.health;
+  }
+
+  /**
+   * Show game over screen
+   */
+  private showGameOver(): void {
+    this.container.innerHTML = '';
+    
+    const gameOver = document.createElement('div');
+    gameOver.className = 'game-over-screen';
+    
+    const content = document.createElement('div');
+    content.className = 'game-over-content';
+    
+    const title = document.createElement('h1');
+    title.className = 'game-over-title';
+    title.textContent = 'Game Over';
+    
+    const message = document.createElement('p');
+    message.className = 'game-over-message';
+    message.textContent = `Final Score: ${this.state.score}`;
+    
+    const restartButton = document.createElement('button');
+    restartButton.className = 'restart-button';
+    restartButton.textContent = 'Restart';
+    restartButton.addEventListener('click', () => {
+      window.location.reload();
+    });
+    
+    content.appendChild(title);
+    content.appendChild(message);
+    content.appendChild(restartButton);
+    gameOver.appendChild(content);
+    this.container.appendChild(gameOver);
+  }
+
+  /**
    * Update display with current state
    */
   private updateDisplay(): void {
+    // Update health and score display
+    const healthContainer = this.container.querySelector('.health-container');
+    if (healthContainer) {
+      const hearts = healthContainer.querySelectorAll('.heart');
+      hearts.forEach((heart, i) => {
+        heart.className = i < this.state.health ? 'heart filled' : 'heart empty';
+      });
+    }
+    
+    const scoreText = this.container.querySelector('.score-text');
+    if (scoreText) {
+      scoreText.textContent = `${this.state.score}`;
+    }
+    
     // Update grid
     if (this.gridElement) {
       updateGrid(this.gridElement, {
@@ -463,20 +555,46 @@ export class Game {
     this.container.innerHTML = '';
     this.container.className = 'game-container';
 
-    // Header
+    // Header with integrated health and score
     const header = document.createElement('div');
     header.className = 'game-header';
     
+    // Health on the left
+    const healthContainer = document.createElement('div');
+    healthContainer.className = 'health-container';
+    for (let i = 0; i < 3; i++) {
+      const heart = document.createElement('span');
+      heart.className = i < this.state.health ? 'heart filled' : 'heart empty';
+      heart.textContent = '♥';
+      healthContainer.appendChild(heart);
+    }
+    header.appendChild(healthContainer);
+    
+    // Title in the center
     const title = document.createElement('h1');
     title.textContent = this.state.puzzle.title;
     header.appendChild(title);
     
+    // Score on the right
+    const scoreContainer = document.createElement('div');
+    scoreContainer.className = 'score-container';
+    const star = document.createElement('span');
+    star.className = 'star-icon';
+    star.textContent = '⭐';
+    const scoreText = document.createElement('span');
+    scoreText.className = 'score-text';
+    scoreText.textContent = `${this.state.score}`;
+    scoreContainer.appendChild(star);
+    scoreContainer.appendChild(scoreText);
+    header.appendChild(scoreContainer);
+    
+    this.container.appendChild(header);
+    
+    // Instruction below header
     const instruction = document.createElement('p');
     instruction.className = 'instruction';
     instruction.textContent = this.state.puzzle.instruction;
-    header.appendChild(instruction);
-    
-    this.container.appendChild(header);
+    this.container.appendChild(instruction);
 
     // Main content area
     const mainContent = document.createElement('div');

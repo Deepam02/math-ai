@@ -12,6 +12,8 @@ const appContainer = document.querySelector<HTMLDivElement>('#app')!;
 let currentPuzzleIndex = 0;
 let gameInstance: Game | null = null;
 let snowfallInstance: any = null;
+let globalScore = 0;
+let globalHealth = 3;
 
 // Create landing page
 function createLandingPage(): HTMLElement {
@@ -44,6 +46,8 @@ function createLandingPage(): HTMLElement {
     }
     landing.style.display = 'none';
     currentPuzzleIndex = 0;
+    globalScore = 0;
+    globalHealth = 3;
     loadPuzzle(currentPuzzleIndex);
   });
   
@@ -68,8 +72,11 @@ function loadPuzzle(index: number) {
   
   gameInstance = new Game(puzzle, appContainer, () => {
     // Callback when puzzle is solved
+    // Save current score and health
+    globalScore = gameInstance!.getScore();
+    globalHealth = gameInstance!.getHealth();
     showNextButton();
-  });
+  }, globalScore, globalHealth);
   
   // Expose for debugging
   (window as any).game = gameInstance;
@@ -113,6 +120,8 @@ function showCompletionScreen() {
   
   restartButton.addEventListener('click', () => {
     currentPuzzleIndex = 0;
+    globalScore = 0;
+    globalHealth = 3;
     loadPuzzle(currentPuzzleIndex);
   });
   

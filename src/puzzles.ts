@@ -95,7 +95,7 @@ export const q2: Puzzle = {
  */
 export const q3: Puzzle = {
   id: 'q3-condition-evaluation',
-  title: 'Q3: Which Conditions Are Satisfied',
+  title: 'Q8: Which Conditions Are Satisfied',
   instruction: 'Radha completed a cross-number like this. Select all the conditions she satisfied.',
   
   layout: {
@@ -166,7 +166,7 @@ export const q3: Puzzle = {
  */
 export const q4: Puzzle = {
   id: 'q4-greatest-smallest',
-  title: 'Q4: Greatest and Smallest Numbers',
+  title: 'Q6: Greatest and Smallest Numbers',
   instruction: 'Make 2 numbers in this cross-number from the digits given below satisfying the given conditions.',
   
   layout: {
@@ -219,7 +219,7 @@ export const q4: Puzzle = {
  */
 export const q5: Puzzle = {
   id: 'q5-dependent-numbers',
-  title: 'Q5: Dependent Numbers',
+  title: 'Q7: Dependent Numbers',
   instruction: 'Make 3 numbers in the cross-number from the digits given below satisfying the given conditions.',
   
   layout: {
@@ -288,7 +288,7 @@ export const q5: Puzzle = {
  */
 export const q7: Puzzle = {
   id: 'q7-sum-and-place-value',
-  title: 'Q7: Sum and Place Value Logic',
+  title: 'Q3: Sum and Place Value Logic',
   instruction: 'Make 2 numbers without repeating the digits satisfying all the given conditions.',
   
   layout: {
@@ -350,7 +350,7 @@ export const q7: Puzzle = {
  */
 export const q8: Puzzle = {
   id: 'q8-colored-cells',
-  title: 'Q8: Cell Restrictions',
+  title: 'Q4: Cell Restrictions',
   instruction: 'Arrange the digits satisfying all the given conditions.',
   
   layout: {
@@ -426,7 +426,7 @@ export const q8: Puzzle = {
  */
 export const q9: Puzzle = {
   id: 'q9-slot-arithmetic',
-  title: 'Q9: Number Relationships',
+  title: 'Q5: Number Relationships',
   instruction: 'Arrange the digits so that they satisfy all the given conditions.',
   
   layout: {
@@ -489,7 +489,7 @@ export const q9: Puzzle = {
 /**
  * All available puzzles in order
  */
-export const puzzles: Puzzle[] = [q8, q2, q3, q4, q5, q7, q8, q9];
+export const puzzles: Puzzle[] = [q1, q2, q7, q8, q9, q4, q5, q3];
 
 /**
  * Get a puzzle by ID

@@ -53,27 +53,33 @@ body {
 
 /* Header */
 .game-header {
-  text-align: center;
-  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 15px;
 }
 
 .game-header h1 {
+  flex: 1;
+  text-align: center;
   font-size: 2.5rem;
   background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #d4af37 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 10px;
+  margin: 0;
   font-weight: 800;
   text-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  line-height: 1.2;
 }
 
 .instruction {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.8);
-  max-width: 800px;
-  margin: 0 auto;
+  text-align: center;
+  margin-bottom: 30px;
   font-weight: 300;
 }
 
@@ -926,5 +932,199 @@ body {
   .completion-message {
     font-size: 1.3rem;
     padding: 0 20px;
+  }
+}
+
+/* Health and Score Display */.health-container {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.heart {
+  font-size: 1.8rem;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.heart.filled {
+  color: #ef4444;
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.heart.empty {
+  color: rgba(255, 255, 255, 0.2);
+  opacity: 0.5;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.1);
+  }
+  20% {
+    transform: scale(1);
+  }
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(212, 175, 55, 0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  flex-shrink: 0;
+}
+
+.star-icon {
+  font-size: 1.5rem;
+  animation: starGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+}
+
+@keyframes starGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+    transform: rotate(0deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.9));
+    transform: rotate(5deg);
+  }
+}
+
+.score-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(212, 175, 55, 0.95);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  min-width: 25px;
+  text-align: center;
+}
+
+/* Game Over Screen */
+.game-over-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.game-over-content {
+  text-align: center;
+  animation: slideUp 0.6s ease-out;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  padding: 60px 80px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.game-over-title {
+  font-size: 4rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  letter-spacing: -1px;
+}
+
+.game-over-message {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 40px;
+  font-weight: 400;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.restart-button {
+  padding: 18px 50px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.9);
+  color: #dc2626;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.restart-button:hover {
+  transform: translateY(-3px);
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: white;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-bar {
+    padding: 12px 16px;
+  }
+  
+  .heart {
+    font-size: 1.5rem;
+  }
+  
+  .star-icon {
+    font-size: 1.4rem;
+  }
+  
+  .score-text {
+    font-size: 1.4rem;
+  }
+  
+  .game-over-content {
+    padding: 40px 30px;
+    margin: 20px;
+  }
+  
+  .game-over-title {
+    font-size: 2.5rem;
+  }
+  
+  .game-over-message {
+    font-size: 1.3rem;
+  }
+  
+  .restart-button {
+    padding: 14px 40px;
+    font-size: 1.1rem;
   }
 }

@@ -105,6 +105,8 @@ export interface GameState {
   selectedDigitIndex: number | null; // Index of selected digit in pool
   isSubmitted: boolean;
   validationResults: ValidationResult[];
+  health: number; // Player health (starts at 3)
+  score: number; // Player score (increases per puzzle)
 }
 
 /**
