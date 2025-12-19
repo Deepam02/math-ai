@@ -149,7 +149,7 @@ function validateConstraint(
 function validateGreatestNumber(
   constraint: Constraint,
   digits: number[],
-  state: GameState
+  _state: GameState
 ): ValidationResult {
   const currentNumber = parseInt(digits.join(''));
   
@@ -189,7 +189,7 @@ function validateGreatestNumber(
 function validateSmallestNumber(
   constraint: Constraint,
   digits: number[],
-  state: GameState
+  _state: GameState
 ): ValidationResult {
   const currentNumber = parseInt(digits.join(''));
   
@@ -348,7 +348,7 @@ function getDigitAtPlace(digits: number[], place: string): number | null {
 function validatePlaceValueSumEquals(
   constraint: Constraint,
   digits: number[],
-  slot: import('./types').Slot
+  _slot: import('./types').Slot
 ): ValidationResult {
   if (!constraint.places || constraint.sum === undefined) {
     return {

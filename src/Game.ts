@@ -17,18 +17,12 @@ export class Game {
   private submitButton: HTMLElement | null = null;
   private messageElement: HTMLElement | null = null;
   private hoveredSlotId: string | null = null;
-  private successSound: HTMLAudioElement;
-  private errorSound: HTMLAudioElement;
   private onComplete: (() => void) | null;
 
   constructor(puzzle: Puzzle, container: HTMLElement, onComplete?: () => void, initialScore: number = 0, initialHealth: number = 3) {
     this.container = container;
     this.onComplete = onComplete || null;
     this.state = this.initializeState(puzzle, initialScore, initialHealth);
-    
-    // Initialize sound effects using Web Audio API
-    this.successSound = this.createSuccessSound();
-    this.errorSound = this.createErrorSound();
     
     this.render();
   }
@@ -55,85 +49,6 @@ export class Game {
       health: initialHealth,
       score: initialScore
     };
-  }
-
-  /**
-   * Get current score
-   */
-  public getScore(): number {
-    return this.state.score;
-  }
-
-  /**
-   * Get current health
-   */
-  public getHealth(): number {
-    return this.state.health;
-  }
-
-  /**
-   * Create success sound effect
-   */
-  private createSuccessSound(): HTMLAudioElement {
-    const audio = new Audio();
-    // Create a cheerful success melody
-    audio.src = this.generateTone([
-      { freq: 523.25, duration: 0.15 }, // C5
-      { freq: 659.25, duration: 0.15 }, // E5
-      { freq: 783.99, duration: 0.15 }, // G5
-      { freq: 1046.50, duration: 0.3 }  // C6
-    ]);
-    audio.volume = 0.3;
-    return audio;
-  }
-
-  /**
-   * Create error sound effect
-   */
-  private createErrorSound(): HTMLAudioElement {
-    const audio = new Audio();
-    // Create a descending error tone
-    audio.src = this.generateTone([
-      { freq: 400, duration: 0.2 },
-      { freq: 300, duration: 0.3 }
-    ]);
-    audio.volume = 0.3;
-    return audio;
-  }
-
-  /**
-   * Generate tone using Web Audio API
-   */
-  private generateTone(notes: { freq: number; duration: number }[]): string {
-    try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      const context = new AudioContext();
-      const sampleRate = context.sampleRate;
-      
-      // Calculate total duration
-      const totalDuration = notes.reduce((sum, note) => sum + note.duration, 0);
-      const totalSamples = Math.floor(totalDuration * sampleRate);
-      
-      const buffer = context.createBuffer(1, totalSamples, sampleRate);
-      const data = buffer.getChannelData(0);
-      
-      let sampleIndex = 0;
-      notes.forEach(note => {
-        const noteSamples = Math.floor(note.duration * sampleRate);
-        for (let i = 0; i < noteSamples; i++) {
-          const t = i / sampleRate;
-          const envelope = Math.exp(-3 * t / note.duration);
-          data[sampleIndex++] = envelope * Math.sin(2 * Math.PI * note.freq * t) * 0.3;
-        }
-      });
-      
-      // Convert to WAV (simplified - just return empty for now as browser won't support direct playback)
-      // In a real app, you'd use a library to convert buffer to WAV
-      return 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-    } catch {
-      // Fallback empty audio
-      return 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-    }
   }
 
   /**
@@ -389,7 +304,7 @@ export class Game {
   /**
    * Handle drag from cell (to potentially remove it)
    */
-  private handleDragFromCell = (cellId: CellId): void => {
+  private handleDragFromCell = (_cellId: CellId): void => {
     // Track which cell is being dragged
     // We'll handle the actual removal in handleDropToPool if needed
   };
